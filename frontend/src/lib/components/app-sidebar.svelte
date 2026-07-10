@@ -1,6 +1,10 @@
 <script lang="ts">
   import * as Sidebar from "$lib/components/ui/sidebar/index"
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index"
+  import * as Dialog from "$lib/components/ui/dialog/index"
+  import { Button } from "$lib/components/ui/button/index"
+  import { Label } from "$lib/components/ui/label/index"
+  import { Input } from "$lib/components/ui/input/index"
   import {
     Calendar03Icon,
     CalendarClockIcon,
@@ -55,6 +59,8 @@
 
   const isEventSelected = false // TODO Make dynamic
   const isLoggedIn = false // TODO Make dynamic
+
+  let openLoginPopup = $state(false)
 </script>
 
 <Sidebar.Root>
@@ -136,7 +142,7 @@
               <Sidebar.MenuItem>
                 <Sidebar.MenuButton>
                   {#snippet child({ props })}
-                    <a href="#" {...props}> <!-- TODO Open Log in Popup -->
+                    <a onclick={() => { openLoginPopup = true }} {...props}> <!-- TODO Open Log in Popup -->
                       <span>Log in</span>
                     </a>
                   {/snippet}
@@ -149,3 +155,22 @@
   </Sidebar.Footer>
 
 </Sidebar.Root>
+
+<!-- Login Popup -->
+<Dialog.Root bind:open={openLoginPopup}>
+<Dialog.Content>
+  <Dialog.Header>
+
+    <Label for="email">E-Mail</Label>
+    <Input id="email" name="email" type="email" />
+
+    <Label for="password">Password</Label>
+    <Input id="password" name="password" type="password" />
+
+  </Dialog.Header>
+  <Dialog.Footer>
+    <Dialog.Close>Cancel</Dialog.Close>
+    <Button type="submit">Login</Button>
+  </Dialog.Footer>
+</Dialog.Content>
+</Dialog.Root>
