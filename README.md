@@ -14,4 +14,3 @@ This project intends to make timing on RC Rally events easy. It's primarily deve
 - Leaderboards 🔴
   - For active Stage 🔴
   - For whole Event 🔴
- 
