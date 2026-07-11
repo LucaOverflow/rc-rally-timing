@@ -61,6 +61,7 @@
   const isLoggedIn = false // TODO Make dynamic
 
   let openLoginPopup = $state(false)
+  let openRegisterPopup = $state(false)
 </script>
 
 <Sidebar.Root>
@@ -140,13 +141,22 @@
           {:else}
             <Sidebar.Menu>
               <Sidebar.MenuItem>
-                <Sidebar.MenuButton>
-                  {#snippet child({ props })}
-                    <a onclick={() => { openLoginPopup = true }} {...props}>
-                      <span>Log in</span>
-                    </a>
-                  {/snippet}
-                </Sidebar.MenuButton>
+                <div class="flex items-center gap-2">
+                  <Sidebar.MenuButton class="justify-center">
+                    {#snippet child({ props })}
+                      <a onclick={() => { openLoginPopup = true }} {...props}>
+                        <span>Log in</span>
+                      </a>
+                    {/snippet}
+                  </Sidebar.MenuButton>
+                  <Sidebar.MenuButton class="justify-center">
+                    {#snippet child({ props })}
+                      <a onclick={() => { openRegisterPopup = true }} {...props}>
+                        <span>Register</span>
+                      </a>
+                    {/snippet}
+                  </Sidebar.MenuButton>
+                </div>
               </Sidebar.MenuItem>
             </Sidebar.Menu>
           {/if}
@@ -171,6 +181,31 @@
   <Dialog.Footer>
     <Dialog.Close>Cancel</Dialog.Close>
     <Button type="submit">Login</Button>
+  </Dialog.Footer>
+</Dialog.Content>
+</Dialog.Root>
+
+<!-- Register Popup -->
+<Dialog.Root bind:open={openRegisterPopup}>
+<Dialog.Content>
+  <Dialog.Header>
+
+    <Label for="name">Name</Label>
+    <Input id="name" name="name" type="text" />
+
+    <Label for="email">E-Mail</Label>
+    <Input id="email" name="email" type="email" />
+
+    <Label for="password">Password</Label>
+    <Input id="password" name="password" type="password" />
+
+    <Label for="passwordConfirm">Confirm Password</Label>
+    <Input id="passwordConfirm" name="passwordConfirm" type="password" />
+
+  </Dialog.Header>
+  <Dialog.Footer>
+    <Dialog.Close>Cancel</Dialog.Close>
+    <Button type="submit">Register</Button>
   </Dialog.Footer>
 </Dialog.Content>
 </Dialog.Root>
