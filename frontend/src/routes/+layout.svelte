@@ -13,7 +13,7 @@
 
 <Sidebar.Provider>
 	<AppSidebar />
-	<main>
+	<main class="w-full">
 		<Sidebar.Trigger />
 		{@render children()}
 	</main>
