@@ -11,6 +11,7 @@
     Calendar03Icon,
     CalendarClockIcon,
     ChevronUpIcon,
+    InformationCircleIcon,
     InternetAntenna02Icon,
     RankingIcon,
     StopWatchIcon,
@@ -66,6 +67,8 @@
   let isLoggedIn = $state(pb.authStore.isValid)
   let openLoginPopup = $state(false)
   let openRegisterPopup = $state(false)
+  let openResetPasswordPopup = $state(false)
+  let resetPasswordRequested = $state(false)
 
   let formData = $state({
     name: '',
@@ -73,7 +76,8 @@
     password: '',
     passwordConfirm: '',
     loginErrorMessage: '',
-    registerErrorMessage: ''
+    registerErrorMessage: '',
+    resetPasswordErrorMessage: ''
   })
 
   onMount(() => {
@@ -89,13 +93,14 @@
     formData.passwordConfirm = ''
     formData.loginErrorMessage = ''
     formData.registerErrorMessage = ''
+    formData.resetPasswordErrorMessage = ''
   }
 
   function login (event: Event) {
     event.preventDefault()
 
     formData.loginErrorMessage = ''
-
+    
     pb.collection('users').authWithPassword(formData.email, formData.password)
       .then(() => {
         openLoginPopup = false
@@ -123,6 +128,21 @@
       })
       .catch((error: Error) => {
         formData.registerErrorMessage = error.message
+      })
+  }
+
+  function resetPassword (event: Event) {
+    event.preventDefault()
+
+    formData.resetPasswordErrorMessage = ''
+
+    pb.collection('users').requestPasswordReset(formData.email)
+      .then(() => {
+        resetPasswordRequested = true
+        resetFormData()
+      })
+      .catch((error: Error) => {
+        formData.resetPasswordErrorMessage = error.message
       })
   }
 
@@ -257,6 +277,10 @@
 
     </Dialog.Header>
     <Dialog.Footer>
+      <Button variant="link" class="mr-auto text-muted-foreground" onclick={() => {
+        openResetPasswordPopup = true
+        openLoginPopup = false
+        }}>Reset Password</Button>
       <Dialog.Close>Cancel</Dialog.Close>
       <Button type="submit">Login</Button>
     </Dialog.Footer>
@@ -296,6 +320,44 @@
     <Dialog.Footer>
       <Dialog.Close>Cancel</Dialog.Close>
       <Button type="submit">Register</Button>
+    </Dialog.Footer>
+  </form>
+</Dialog.Content>
+</Dialog.Root>
+
+<!-- Reset Password Popup -->
+<Dialog.Root bind:open={openResetPasswordPopup}>
+<Dialog.Content>
+  <form onsubmit={resetPassword}>
+    <Dialog.Header>
+
+      <Label for="email">E-Mail</Label>
+      <Input id="email" name="email" type="email" bind:value={formData.email} />
+
+      {#if resetPasswordRequested}
+        <Alert.Root>
+          <HugeiconsIcon icon={InformationCircleIcon} />
+          <Alert.Title>Password reset requested</Alert.Title>
+          <Alert.Description>
+            Please chek your E-Mail Inbox.
+          </Alert.Description>
+        </Alert.Root>
+      {/if}
+      
+      {#if formData.resetPasswordErrorMessage}
+        <Alert.Root variant="destructive">
+          <HugeiconsIcon icon={Alert01Icon} />
+          <Alert.Title>Unable to reset password</Alert.Title>
+          <Alert.Description>
+            {formData.resetPasswordErrorMessage}
+          </Alert.Description>
+        </Alert.Root>
+      {/if}
+
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Dialog.Close>Cancel</Dialog.Close>
+      <Button type="submit">Reset password</Button>
     </Dialog.Footer>
   </form>
 </Dialog.Content>
