@@ -154,25 +154,27 @@
 <Sidebar.Root>
 
   <Sidebar.Content>
-    <Sidebar.Group>
-      <Sidebar.GroupLabel>Personal</Sidebar.GroupLabel>
-      <Sidebar.GroupContent>
-        <Sidebar.Menu>
-          {#each driverItems as item (item.title)}
-            <Sidebar.MenuItem>
-              <Sidebar.MenuButton>
-                {#snippet child({ props })}
-                  <a href={item.url} {...props}>
-                      <HugeiconsIcon icon={item.icon} />
-                      <span>{item.title}</span>
-                    </a>
-                {/snippet}
-              </Sidebar.MenuButton>
-            </Sidebar.MenuItem>
-          {/each}
-        </Sidebar.Menu>
-      </Sidebar.GroupContent>
-    </Sidebar.Group>
+    {#if isLoggedIn}
+      <Sidebar.Group>
+        <Sidebar.GroupLabel>Personal</Sidebar.GroupLabel>
+        <Sidebar.GroupContent>
+          <Sidebar.Menu>
+            {#each driverItems as item (item.title)}
+              <Sidebar.MenuItem>
+                <Sidebar.MenuButton>
+                  {#snippet child({ props })}
+                    <a href={item.url} {...props}>
+                        <HugeiconsIcon icon={item.icon} />
+                        <span>{item.title}</span>
+                      </a>
+                  {/snippet}
+                </Sidebar.MenuButton>
+              </Sidebar.MenuItem>
+            {/each}
+          </Sidebar.Menu>
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
+    {/if}
 
     {#if isEventSelected}
       <Sidebar.Group>
