@@ -112,6 +112,7 @@
       emailVisibility: true
     })
       .then(() => {
+        pb.collection('user').requestVerification(formData.email)
         login(event)
         openRegisterPopup = false
         resetFormData()
