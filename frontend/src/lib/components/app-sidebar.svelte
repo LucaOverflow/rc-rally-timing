@@ -2,10 +2,12 @@
   import * as Sidebar from "$lib/components/ui/sidebar/index"
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index"
   import * as Dialog from "$lib/components/ui/dialog/index"
+  import * as Alert from "$lib/components/ui/alert/index"
   import { Button } from "$lib/components/ui/button/index"
   import { Label } from "$lib/components/ui/label/index"
   import { Input } from "$lib/components/ui/input/index"
   import {
+    Alert01Icon,
     Calendar03Icon,
     CalendarClockIcon,
     ChevronUpIcon,
@@ -14,6 +16,8 @@
     StopWatchIcon,
     Timer02Icon } from '@hugeicons/core-free-icons';
   import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/svelte';
+  import { pb } from '$lib/pb';
+  import { onMount } from 'svelte';
 
   interface MenuItem {
     title: string,
@@ -58,10 +62,68 @@
   ]
 
   const isEventSelected = false // TODO Make dynamic
-  const isLoggedIn = false // TODO Make dynamic
 
+  let isLoggedIn = $state(pb.authStore.isValid)
   let openLoginPopup = $state(false)
   let openRegisterPopup = $state(false)
+
+  let formData = $state({
+    name: '',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+    loginErrorMessage: '',
+    registerErrorMessage: ''
+  })
+
+  onMount(() => {
+    pb.authStore.onChange(() => {
+      isLoggedIn = pb.authStore.isValid
+    })
+  })
+
+  function resetFormData () {
+    formData.name = ''
+    formData.email = ''
+    formData.password = ''
+    formData.passwordConfirm = ''
+    formData.loginErrorMessage = ''
+    formData.registerErrorMessage = ''
+  }
+
+  function login (event: Event) {
+    event.preventDefault()
+
+    pb.collection('users').authWithPassword(formData.email, formData.password)
+      .then(() => {
+        openLoginPopup = false
+        resetFormData()
+      })
+      .catch((error: Error) => {
+        formData.loginErrorMessage = error.message
+      })
+  }
+  
+  function register (event: Event) {
+    event.preventDefault()
+
+    pb.collection('users').create({
+      ...formData,
+      emailVisibility: true
+    })
+      .then(() => {
+        login(event)
+        openRegisterPopup = false
+        resetFormData()
+      })
+      .catch((error: Error) => {
+        formData.registerErrorMessage = error.message
+      })
+  }
+
+  function signout () {
+    pb.authStore.clear()
+  }
 </script>
 
 <Sidebar.Root>
@@ -121,7 +183,7 @@
                     {...props}
                     class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
-                    Username <!-- TODO Add real username -->
+                    {pb.authStore.record?.name}
                     <HugeiconsIcon icon={ChevronUpIcon} class="ms-auto" />
                   </Sidebar.MenuButton>
                 {/snippet}
@@ -133,7 +195,7 @@
                 <DropdownMenu.Item>
                   <span>Account</span>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item>
+                <DropdownMenu.Item onclick={signout}>
                   <span>Sign out</span>
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -169,43 +231,67 @@
 <!-- Login Popup -->
 <Dialog.Root bind:open={openLoginPopup}>
 <Dialog.Content>
-  <Dialog.Header>
+  <form onsubmit={login}>
+    <Dialog.Header>
 
-    <Label for="email">E-Mail</Label>
-    <Input id="email" name="email" type="email" />
+      <Label for="email">E-Mail</Label>
+      <Input id="email" name="email" type="email" bind:value={formData.email} />
 
-    <Label for="password">Password</Label>
-    <Input id="password" name="password" type="password" />
+      <Label for="password">Password</Label>
+      <Input id="password" name="password" type="password" bind:value={formData.password} />
 
-  </Dialog.Header>
-  <Dialog.Footer>
-    <Dialog.Close>Cancel</Dialog.Close>
-    <Button type="submit">Login</Button>
-  </Dialog.Footer>
+      {#if formData.loginErrorMessage}
+        <Alert.Root variant="destructive">
+          <HugeiconsIcon icon={Alert01Icon} />
+          <Alert.Title>Unable to Login</Alert.Title>
+          <Alert.Description>
+            {formData.loginErrorMessage}
+          </Alert.Description>
+        </Alert.Root>
+      {/if}
+
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Dialog.Close>Cancel</Dialog.Close>
+      <Button type="submit">Login</Button>
+    </Dialog.Footer>
+  </form>
 </Dialog.Content>
 </Dialog.Root>
 
 <!-- Register Popup -->
 <Dialog.Root bind:open={openRegisterPopup}>
 <Dialog.Content>
-  <Dialog.Header>
+  <form onsubmit={register}>
+    <Dialog.Header>
 
-    <Label for="name">Name</Label>
-    <Input id="name" name="name" type="text" />
+      <Label for="name">Name</Label>
+      <Input id="name" name="name" type="text" bind:value={formData.name} />
 
-    <Label for="email">E-Mail</Label>
-    <Input id="email" name="email" type="email" />
+      <Label for="email">E-Mail</Label>
+      <Input id="email" name="email" type="email" bind:value={formData.email} />
 
-    <Label for="password">Password</Label>
-    <Input id="password" name="password" type="password" />
+      <Label for="password">Password</Label>
+      <Input id="password" name="password" type="password" bind:value={formData.password} />
 
-    <Label for="passwordConfirm">Confirm Password</Label>
-    <Input id="passwordConfirm" name="passwordConfirm" type="password" />
+      <Label for="passwordConfirm">Confirm Password</Label>
+      <Input id="passwordConfirm" name="passwordConfirm" type="password" bind:value={formData.passwordConfirm} />
 
-  </Dialog.Header>
-  <Dialog.Footer>
-    <Dialog.Close>Cancel</Dialog.Close>
-    <Button type="submit">Register</Button>
-  </Dialog.Footer>
+      {#if formData.registerErrorMessage}
+        <Alert.Root variant="destructive">
+          <HugeiconsIcon icon={Alert01Icon} />
+          <Alert.Title>Unable to Register</Alert.Title>
+          <Alert.Description>
+            {formData.registerErrorMessage}
+          </Alert.Description>
+        </Alert.Root>
+      {/if}
+
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Dialog.Close>Cancel</Dialog.Close>
+      <Button type="submit">Register</Button>
+    </Dialog.Footer>
+  </form>
 </Dialog.Content>
 </Dialog.Root>
