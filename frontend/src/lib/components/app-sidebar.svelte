@@ -142,7 +142,7 @@
               <Sidebar.MenuItem>
                 <Sidebar.MenuButton>
                   {#snippet child({ props })}
-                    <a onclick={() => { openLoginPopup = true }} {...props}> <!-- TODO Open Log in Popup -->
+                    <a onclick={() => { openLoginPopup = true }} {...props}>
                       <span>Log in</span>
                     </a>
                   {/snippet}
