@@ -94,6 +94,8 @@
   function login (event: Event) {
     event.preventDefault()
 
+    formData.loginErrorMessage = ''
+
     pb.collection('users').authWithPassword(formData.email, formData.password)
       .then(() => {
         openLoginPopup = false
@@ -106,6 +108,8 @@
   
   function register (event: Event) {
     event.preventDefault()
+
+    formData.registerErrorMessage = ''
 
     pb.collection('users').create({
       ...formData,
