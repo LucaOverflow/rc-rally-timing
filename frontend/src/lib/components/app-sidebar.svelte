@@ -20,6 +20,7 @@
   import { pb } from '$lib/pb';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
 
   interface MenuItem {
     title: string,
@@ -162,7 +163,7 @@
           <Sidebar.Menu>
             {#each driverItems as item (item.title)}
               <Sidebar.MenuItem>
-                <Sidebar.MenuButton>
+                <Sidebar.MenuButton isActive={page.url.pathname.endsWith(item.url)}>
                   {#snippet child({ props })}
                     <a href={item.url} {...props}>
                         <HugeiconsIcon icon={item.icon} />
@@ -184,7 +185,7 @@
           <Sidebar.Menu>
             {#each eventItems as item (item.title)}
               <Sidebar.MenuItem>
-                <Sidebar.MenuButton>
+                <Sidebar.MenuButton isActive={page.url.pathname.endsWith(item.url)}>
                   {#snippet child({ props })}
                     <a href={item.url} {...props}>
                         <HugeiconsIcon icon={item.icon} />
