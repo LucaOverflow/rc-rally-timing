@@ -19,6 +19,7 @@
   import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/svelte';
   import { pb } from '$lib/pb';
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
   interface MenuItem {
     title: string,
@@ -219,7 +220,7 @@
                 side="top"
                 class="w-(--bits-dropdown-menu-anchor-width)"
               >
-                <DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => { goto('account') }}>
                   <span>Account</span>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item onclick={signout}>
