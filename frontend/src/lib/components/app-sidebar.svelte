@@ -36,7 +36,7 @@
     },
     {
       title: "Transponder",
-      url: "#",
+      url: "transponder",
       icon: InternetAntenna02Icon
     },
     {
