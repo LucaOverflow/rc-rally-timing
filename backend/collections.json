@@ -854,7 +854,7 @@
   },
   {
     "id": "pbc_1894659972",
-    "listRule": null,
+    "listRule": "transponder.owner = @request.auth.id",
     "viewRule": null,
     "createRule": null,
     "updateRule": null,
@@ -905,17 +905,18 @@
         "type": "number"
       },
       {
+        "cascadeDelete": true,
+        "collectionId": "pbc_1445890807",
         "help": "",
         "hidden": false,
-        "id": "number3969624234",
-        "max": null,
-        "min": null,
-        "name": "transponder_id",
-        "onlyInt": true,
+        "id": "relation2799675779",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "transponder",
         "presentable": false,
         "required": true,
         "system": false,
-        "type": "number"
+        "type": "relation"
       },
       {
         "autogeneratePattern": "",
@@ -1439,12 +1440,12 @@
     "type": "base",
     "fields": [
       {
-        "autogeneratePattern": "[a-z0-9]{15}",
+        "autogeneratePattern": "",
         "help": "",
         "hidden": false,
         "id": "text3208210256",
-        "max": 15,
-        "min": 15,
+        "max": 0,
+        "min": 0,
         "name": "id",
         "pattern": "^[a-z0-9]+$",
         "presentable": false,
@@ -1452,19 +1453,6 @@
         "required": true,
         "system": true,
         "type": "text"
-      },
-      {
-        "help": "",
-        "hidden": false,
-        "id": "number3969624234",
-        "max": null,
-        "min": null,
-        "name": "transponder_id",
-        "onlyInt": true,
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "number"
       },
       {
         "cascadeDelete": true,

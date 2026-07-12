@@ -4,6 +4,7 @@
   import { ScrollArea } from "$lib/components/ui/scroll-area"
   import { Input } from "$lib/components/ui/input"
   import { Label } from "$lib/components/ui/label"
+  import { Spinner } from "$lib/components/ui/spinner"
   import * as Item from "$lib/components/ui/item"
   import * as Dialog from "$lib/components/ui/dialog"
   import * as Alert from "$lib/components/ui/alert"
@@ -16,11 +17,12 @@
 
   let transponder: RecordModel[] = $state([])
   let initialTransponderState: RecordModel[]
+  let transponderStatusColor: string[] = $state([])
   let saveTimeout: number
 
   let openAddTransponderPopup = $state(false)
   let addTransponderFormData = $state({
-    transponder_id: undefined,
+    id: undefined,
     personal_notes: ''
   })
   let addTransponderErrorMessage = $state('')
@@ -36,7 +38,22 @@
       .then((data: RecordModel[]) => {
         transponder = data
         initialTransponderState = data
+        refreshTransponderStatus()
       })
+  }
+
+  async function refreshTransponderStatus () {
+    for (let i = 0; i < transponder.length; ++i) {
+      const transponderPassings = await pb.collection('passings').getList(1, 1, {
+        filter: pb.filter('transponder = {:transponder}', {transponder: transponder[i].id})
+      })
+
+      if (transponderPassings.items.length > 0) {
+        transponderStatusColor[i] = 'green'
+      } else {
+        transponderStatusColor[i] = 'gray'
+      }
+    }
   }
 
   function addTransponder () {
@@ -101,13 +118,17 @@
 </Button>
 
 <ScrollArea class="m-6">
-  {#each transponder as thisTransponder}
+  {#each transponder as thisTransponder, i}
     <Item.Root variant="outline" class="mb-2">
       <Item.Media>
-        <div class="bg-white w-3 h-3 rounded-full"></div>
+        {#if transponderStatusColor[i]}
+          <div class="w-3 h-3 rounded-full" style="background-color: {transponderStatusColor[i]}"></div>
+        {:else}
+          <Spinner />
+        {/if}
       </Item.Media>
       <Item.Content class="flex-row space-x-1 items-center">
-        <Item.Title>{thisTransponder.transponder_id}</Item.Title>
+        <Item.Title>{thisTransponder.id}</Item.Title>
         {#if thisTransponder.type != ''}
           <Badge variant="secondary">{thisTransponder.type}</Badge>
         {/if}
@@ -124,8 +145,8 @@
   <form onsubmit={addTransponder}>
     <Dialog.Header>
 
-      <Label for="transponder_id">Transponder ID</Label>
-      <Input id="transponder_id" name="transponder_id" type="number" bind:value={addTransponderFormData.transponder_id} />
+      <Label for="id">Transponder ID</Label>
+      <Input id="id" name="id" type="number" bind:value={addTransponderFormData.id} />
 
       <Label for="personal_notes">Personal Notes</Label>
       <Input id="personal_notes" name="personal_notes" type="text" bind:value={addTransponderFormData.personal_notes} />
