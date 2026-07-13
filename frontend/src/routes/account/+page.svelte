@@ -6,6 +6,7 @@
   import { pb } from '$lib/pb'
   import { Alert01Icon, InformationCircleIcon } from '@hugeicons/core-free-icons';
   import { HugeiconsIcon } from '@hugeicons/svelte';
+  import { toast } from 'svelte-sonner';
   
   let initialPersonalDataFormData = {
     name: pb.authStore.record?.name,
@@ -26,6 +27,20 @@
     passwordChanged: false
   })
   let enableChangePasswordFormSaveButton = $derived(changePasswordFormData.oldPassword != '' && changePasswordFormData.password != '' && changePasswordFormData.passwordConfirm != '')
+
+  function copyUserIdToClipboard () {
+    if (pb.authStore.record?.id) {
+      navigator.clipboard.writeText(pb.authStore.record.id)
+        .then(() => {
+          toast.success('Copied User ID to clipboard')
+        })
+        .catch(() => {
+          toast.error("Couldn't copy User ID to clipboard")
+        })
+    } else {
+      toast.error('Please Login first')
+    }
+  }
 
   function savePersonalData (event: Event) {
     event.preventDefault()
@@ -90,6 +105,8 @@
 <div class="flex ml-10 mr-10">
   <div class="flex-2">
     <h1 class="pb-6">Personal Data</h1>
+
+    <Button onclick={copyUserIdToClipboard} class="mb-6">Copy User ID to Clipboard</Button>
 
     <form onsubmit={savePersonalData} class="space-y-1">
       <Label for="name">Name</Label>
