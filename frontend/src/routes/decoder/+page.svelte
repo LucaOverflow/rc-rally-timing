@@ -10,6 +10,7 @@
   import * as Dialog from "$lib/components/ui/dialog"
   import * as Alert from "$lib/components/ui/alert"
   import * as InputGroup from "$lib/components/ui/input-group"
+  import * as Table from "$lib/components/ui/table"
   import { Alert01Icon, Cancel01Icon, PlusSignIcon } from '@hugeicons/core-free-icons'
   import { HugeiconsIcon } from '@hugeicons/svelte'
   import { onMount } from 'svelte'
@@ -30,6 +31,10 @@
   let addDecoderErrorMessage = $state('')
 
   let addDecoderOwnerId: string[] = $state([])
+
+  let openDecoderLogsPopup = $state(false)
+  let decoderLogsPopupIndex = $state(0)
+  let passings: RecordModel[] = $state([])
 
   onMount(() => {
     requestDecoder()
@@ -146,6 +151,31 @@
       })
   }
 
+  // Request and (Un)Subscribe from passings to show in logs popup
+  $effect(() => {
+    if (openDecoderLogsPopup) {
+      pb.collection('passings').getList(1, 50, {
+        filter: pb.filter('decoder = {:decoder}', {decoder: decoder[decoderLogsPopupIndex].id}),
+        sort: '-created'
+      })
+        .then((result) => {
+          passings = result.items
+          pb.collection('passings').subscribe('*', (newPassing) => {
+            passings.unshift(newPassing.record)
+          }, {
+            filter: pb.filter('decoder = {:decoder}', {decoder: decoder[decoderLogsPopupIndex].id}),
+            sort: '-created'
+          })
+        })
+        .catch(() => {
+          toast.error("Couldn't request Decoder logs")
+        })
+    } else {
+      pb.collection('passings').unsubscribe('*')
+      passings = []
+    }
+  })
+
   function deleteDecoder (recordId: string) {
     pb.collection('decoder').delete(recordId)
       .then(() => {
@@ -200,7 +230,7 @@
         </div>
         <div class="ml-auto flex flex-col gap-2">
           <Button onclick={() => { copyDecoderIdToClipboard(thisDecoder.id) }}>Copy access key</Button>
-          <Button variant="secondary">Show logs</Button>
+          <Button variant="secondary" onclick={() => { decoderLogsPopupIndex = i; openDecoderLogsPopup = true }}>Show logs</Button>
           <Button variant="destructive" onclick={() => {deleteDecoder(thisDecoder.id)}}>Remove</Button>
         </div>
       </Item.Content>
@@ -236,5 +266,41 @@
       <Button type="submit">Add</Button>
     </Dialog.Footer>
   </form>
+</Dialog.Content>
+</Dialog.Root>
+
+<!-- Add Logs Popup -->
+<Dialog.Root bind:open={openDecoderLogsPopup}>
+<Dialog.Content class="flex !max-w-fit max-h-[90%] flex-col gap-0">
+  <Dialog.Header class="overflow-y-auto">
+    <Dialog.Title>Logs for {decoder[decoderLogsPopupIndex].name}</Dialog.Title>
+    <Table.Root>
+      <Table.Header>
+        <Table.Row>
+          <Table.Head>Created</Table.Head>
+          <Table.Head>Timecode</Table.Head>
+          <Table.Head>Transponder</Table.Head>
+          <Table.Head>Transponder Type</Table.Head>
+          <Table.Head>RSSI</Table.Head>
+          <Table.Head>Hit Count</Table.Head>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {#each passings as passing}
+          <Table.Row>
+            <Table.Cell>{passing.created}</Table.Cell>
+            <Table.Cell>{passing.timecode_ms}</Table.Cell>
+            <Table.Cell>{passing.transponder}</Table.Cell>
+            <Table.Cell>{passing.transponder_type}</Table.Cell>
+            <Table.Cell>{passing.rssi}</Table.Cell>
+            <Table.Cell>{passing.hit_count}</Table.Cell>
+          </Table.Row>
+        {/each}
+      </Table.Body>
+    </Table.Root>
+  </Dialog.Header>
+  <Dialog.Footer>
+    <Dialog.Close>Close</Dialog.Close>
+  </Dialog.Footer>
 </Dialog.Content>
 </Dialog.Root>
