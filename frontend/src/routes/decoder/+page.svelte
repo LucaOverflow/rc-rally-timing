@@ -136,6 +136,16 @@
       })
   }
 
+  function copyDecoderIdToClipboard (decoder_id: string) {
+    navigator.clipboard.writeText(decoder_id)
+      .then(() => {
+        toast.success('Copied Decoder access key to clipboard')
+      })
+      .catch(() => {
+        toast.error("Couldn't copy Decoder access key to clipboard")
+      })
+  }
+
   function deleteDecoder (recordId: string) {
     pb.collection('decoder').delete(recordId)
       .then(() => {
@@ -176,7 +186,7 @@
           {#each decoder[i].expand?.owner as owner}
             <Badge variant="outline" class="p-0">
               <span class="ml-2">{owner.name}</span>
-              <Button variant="destructive" onclick={() => { removeOwnerFromDecoder(decoder[i].id, owner.id) }} class="w-5 h-5 m-0 rounded-full border-none">
+              <Button variant="destructive" onclick={() => { removeOwnerFromDecoder(thisDecoder.id, owner.id) }} class="w-5 h-5 m-0 rounded-full border-none">
                 <HugeiconsIcon icon={Cancel01Icon} />
               </Button>
             </Badge>
@@ -189,7 +199,7 @@
           </form>
         </div>
         <div class="ml-auto flex flex-col gap-2">
-          <Button>Copy access key</Button>
+          <Button onclick={() => { copyDecoderIdToClipboard(thisDecoder.id) }}>Copy access key</Button>
           <Button variant="secondary">Show logs</Button>
           <Button variant="destructive" onclick={() => {deleteDecoder(thisDecoder.id)}}>Remove</Button>
         </div>
