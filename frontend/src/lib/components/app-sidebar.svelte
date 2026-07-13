@@ -41,7 +41,7 @@
     },
     {
       title: "Decoder",
-      url: "#",
+      url: "decoder",
       icon: StopWatchIcon
     }
   ]

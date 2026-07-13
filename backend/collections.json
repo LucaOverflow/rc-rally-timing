@@ -2,7 +2,7 @@
   {
     "id": "_pb_users_auth_",
     "listRule": "id = @request.auth.id",
-    "viewRule": "id = @request.auth.id",
+    "viewRule": "id = @request.auth.id || decoder_via_owner.owner ~ @request.auth.id",
     "createRule": "",
     "updateRule": "id = @request.auth.id",
     "deleteRule": "id = @request.auth.id",
@@ -372,11 +372,11 @@
   },
   {
     "id": "pbc_2138525773",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "listRule": "owner ~ @request.auth.id",
+    "viewRule": "owner ~ @request.auth.id",
+    "createRule": "owner ~ @request.auth.id",
+    "updateRule": "owner ~ @request.auth.id",
+    "deleteRule": "owner ~ @request.auth.id",
     "name": "decoder",
     "type": "base",
     "fields": [
@@ -418,6 +418,21 @@
         "max": 0,
         "min": 0,
         "name": "type",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "text1497555098",
+        "max": 0,
+        "min": 0,
+        "name": "personal_notes",
         "pattern": "",
         "presentable": false,
         "primaryKey": false,
@@ -854,7 +869,7 @@
   },
   {
     "id": "pbc_1894659972",
-    "listRule": "transponder.owner = @request.auth.id",
+    "listRule": "transponder.owner = @request.auth.id || decoder.owner ~ @request.auth.id",
     "viewRule": null,
     "createRule": null,
     "updateRule": null,
@@ -878,7 +893,7 @@
         "type": "text"
       },
       {
-        "cascadeDelete": false,
+        "cascadeDelete": true,
         "collectionId": "pbc_2138525773",
         "help": "",
         "hidden": false,
