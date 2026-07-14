@@ -66,7 +66,8 @@
     }
   }
 
-  function addDecoder () {
+  function addDecoder (event: Event) {
+    event.preventDefault()
     addDecoderErrorMessage = ''
 
     pb.collection('decoder').create({
