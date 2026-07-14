@@ -22,7 +22,7 @@
 
   let openAddTransponderPopup = $state(false)
   let addTransponderFormData = $state({
-    id: undefined,
+    id: '',
     personal_notes: ''
   })
   let addTransponderErrorMessage = $state('')
@@ -56,20 +56,41 @@
     }
   }
 
-  function addTransponder () {
+  async function addTransponder (event: Event) {
+    event.preventDefault()
     addTransponderErrorMessage = ''
 
-    pb.collection('transponder').create({
-      ...addTransponderFormData,
-      owner: pb.authStore.record?.id
-    })
-      .then(() => {
-        openAddTransponderPopup = false
-        requestTransponder()
-      })
-      .catch((error: Error) => {
-        addTransponderErrorMessage = error.message
-      })
+    try {
+      const transponderWithSameId = await pb.collection('transponder').getOne(addTransponderFormData.id)
+      if (transponderWithSameId.owner == '') {
+        try {
+          await pb.collection('transponder').update(addTransponderFormData.id, {
+            owner: pb.authStore.record?.id,
+            personal_notes: addTransponderFormData.personal_notes
+          })
+        } catch {
+          addTransponderErrorMessage = "Couldn't add user to Transponder"
+        }
+      } else {
+        addTransponderErrorMessage = 'Transponder is already in use by another user'
+      }
+    } catch {
+      try {
+        await pb.collection('transponder').create({
+          ...addTransponderFormData,
+          owner: pb.authStore.record?.id
+        })
+      } catch {
+        addTransponderErrorMessage = "Couldn't add Transponder"
+      }
+    }
+
+    if (addTransponderErrorMessage == '') {
+      openAddTransponderPopup = false
+      requestTransponder()
+      addTransponderFormData.id = ''
+      addTransponderFormData.personal_notes = ''
+    }
   }
 
   function queueNoteSave () {

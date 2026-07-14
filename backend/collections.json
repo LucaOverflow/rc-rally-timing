@@ -1447,9 +1447,9 @@
   {
     "id": "pbc_1445890807",
     "listRule": "owner = @request.auth.id",
-    "viewRule": "owner = @request.auth.id",
-    "createRule": "owner = @request.auth.id",
-    "updateRule": "owner = @request.auth.id",
+    "viewRule": "owner != '' && owner = @request.auth.id ||\nowner = ''",
+    "createRule": "",
+    "updateRule": "owner != '' && owner = @request.auth.id ||\nowner = ''",
     "deleteRule": "owner = @request.auth.id",
     "name": "transponder",
     "type": "base",
@@ -1470,7 +1470,7 @@
         "type": "text"
       },
       {
-        "cascadeDelete": true,
+        "cascadeDelete": false,
         "collectionId": "_pb_users_auth_",
         "help": "",
         "hidden": false,
@@ -1479,7 +1479,7 @@
         "minSelect": 0,
         "name": "owner",
         "presentable": false,
-        "required": true,
+        "required": false,
         "system": false,
         "type": "relation"
       },
