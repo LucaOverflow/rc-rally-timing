@@ -21,6 +21,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import type { RecordModel } from 'pocketbase';
 
   interface MenuItem {
     title: string,
@@ -28,43 +29,56 @@
     icon: IconSvgElement
   }
 
+  let activeEvent: RecordModel | undefined = $state()
+
+  $effect(() => {
+    if (page.params.eventId != undefined && activeEvent?.id != page.params.eventId) {
+      requestActiveEvent(page.params.eventId)
+    }
+  })
+
+  function requestActiveEvent (id: string) {
+    pb.collection('events').getOne(id)
+      .then((result: RecordModel) => {
+        activeEvent = result
+      })
+  }
+
   const driverItems: MenuItem[] = [
     {
       title: "Events",
-      url: "events",
+      url: "/events",
       icon: Calendar03Icon
     },
     {
       title: "Transponder",
-      url: "transponder",
+      url: "/transponder",
       icon: InternetAntenna02Icon
     },
     {
       title: "Decoder",
-      url: "decoder",
+      url: "/decoder",
       icon: StopWatchIcon
     }
   ]
 
-  const eventItems: MenuItem[] = [
+  const eventItems: MenuItem[] = $derived([
     {
       title: "Schedule",
-      url: "#",
+      url: "/events/" + activeEvent?.id + "/schedule",
       icon: CalendarClockIcon
     },
     {
       title: "Leaderboards",
-      url: "#",
+      url: "/events/" + activeEvent?.id + "/leaderboards",
       icon: RankingIcon
     },
     {
       title: "Penalties Tracker",
-      url: "#",
+      url: "/events/" + activeEvent?.id + "/penalties-tracker",
       icon: Timer02Icon
     }
-  ]
-
-  const isEventSelected = false // TODO Make dynamic
+  ])
 
   let isLoggedIn = $state(pb.authStore.isValid)
   let openLoginPopup = $state(false)
@@ -178,9 +192,9 @@
       </Sidebar.Group>
     {/if}
 
-    {#if isEventSelected}
+    {#if activeEvent != undefined}
       <Sidebar.Group>
-        <Sidebar.GroupLabel>Event</Sidebar.GroupLabel> <!-- TODO Add Event Name. Always show currently running Event as default. -->
+        <Sidebar.GroupLabel>{activeEvent.name}</Sidebar.GroupLabel>
         <Sidebar.GroupContent>
           <Sidebar.Menu>
             {#each eventItems as item (item.title)}

@@ -69,7 +69,7 @@
       <Item.Content class="flex-row space-x-1 items-center">
         <Item.Title>{event.name}</Item.Title>
         <div class="flex flex-col gap-1 ml-auto">
-          <Button onclick={() => {goto('events/' + event.id)}}>Open Dashboard</Button>
+          <Button onclick={() => {goto('/events/' + event.id + '/schedule')}}>Select</Button>
           <Button variant="destructive" onclick={() => {deleteEvent(event.id)}}>Remove</Button>
         </div>
       </Item.Content>
