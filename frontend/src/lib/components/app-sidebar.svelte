@@ -31,7 +31,7 @@
   const driverItems: MenuItem[] = [
     {
       title: "Events",
-      url: "#",
+      url: "events",
       icon: Calendar03Icon
     },
     {
