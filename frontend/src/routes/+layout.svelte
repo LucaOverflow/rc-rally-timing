@@ -15,7 +15,7 @@
 
 <Sidebar.Provider>
 	<AppSidebar />
-	<main class="w-full">
+	<main class="flex-grow min-w-0">
 		<Sidebar.Trigger />
 		{@render children()}
 	</main>
