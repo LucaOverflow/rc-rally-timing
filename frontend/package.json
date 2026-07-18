@@ -37,5 +37,9 @@
 	"dependencies": {
 		"mode-watcher": "^1.1.0",
 		"pocketbase": "^0.27.0"
+	},
+	"allowScripts": {
+		"@hugeicons/svelte@1.1.4": true,
+		"fsevents@2.3.3": true
 	}
 }
