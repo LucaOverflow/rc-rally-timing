@@ -871,7 +871,7 @@
     "id": "pbc_1894659972",
     "listRule": "transponder.owner = @request.auth.id || decoder.owner ~ @request.auth.id",
     "viewRule": null,
-    "createRule": null,
+    "createRule": "",
     "updateRule": null,
     "deleteRule": null,
     "name": "passings",
