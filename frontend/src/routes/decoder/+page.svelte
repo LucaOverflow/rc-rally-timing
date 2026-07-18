@@ -25,7 +25,7 @@
 
   let openAddDecoderPopup = $state(false)
   let addDecoderFormData = $state({
-    name: undefined,
+    name: '',
     personal_notes: ''
   })
   let addDecoderErrorMessage = $state('')
@@ -76,6 +76,8 @@
     })
       .then(() => {
         openAddDecoderPopup = false
+        addDecoderFormData.name = ''
+        addDecoderFormData.personal_notes = ''
         requestDecoder()
       })
       .catch((error: Error) => {
