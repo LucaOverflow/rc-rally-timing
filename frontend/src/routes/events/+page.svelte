@@ -3,6 +3,7 @@
   import { Button } from "$lib/components/ui/button"
   import * as Item from '$lib/components/ui/item';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
+  import { globals } from '$lib/globals.svelte';
   import { pb } from '$lib/pb';
   import { StopWatchIcon } from '@hugeicons/core-free-icons';
   import { HugeiconsIcon } from '@hugeicons/svelte';
@@ -51,6 +52,9 @@
     pb.collection('events').delete(event)
       .then(() => {
         requestEvents()
+        if (globals.activeEvent?.id == event) {
+          globals.activeEvent = undefined
+        }
       })
       .catch(() => {
         toast.error("Couldn't remove event")

@@ -22,6 +22,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import type { RecordModel } from 'pocketbase';
+  import { globals } from '$lib/globals.svelte';
 
   interface MenuItem {
     title: string,
@@ -29,10 +30,8 @@
     icon: IconSvgElement
   }
 
-  let activeEvent: RecordModel | undefined = $state()
-
   $effect(() => {
-    if (page.params.eventId != undefined && activeEvent?.id != page.params.eventId) {
+    if (page.params.eventId != undefined && globals.activeEvent?.id != page.params.eventId) {
       requestActiveEvent(page.params.eventId)
     }
   })
@@ -40,7 +39,7 @@
   function requestActiveEvent (id: string) {
     pb.collection('events').getOne(id)
       .then((result: RecordModel) => {
-        activeEvent = result
+        globals.activeEvent = result
       })
   }
 
@@ -65,17 +64,17 @@
   const eventItems: MenuItem[] = $derived([
     {
       title: "Schedule",
-      url: "/events/" + activeEvent?.id + "/schedule",
+      url: "/events/" + globals.activeEvent?.id + "/schedule",
       icon: CalendarClockIcon
     },
     {
       title: "Leaderboards",
-      url: "/events/" + activeEvent?.id + "/leaderboards",
+      url: "/events/" + globals.activeEvent?.id + "/leaderboards",
       icon: RankingIcon
     },
     {
       title: "Penalties Tracker",
-      url: "/events/" + activeEvent?.id + "/penalties-tracker",
+      url: "/events/" + globals.activeEvent?.id + "/penalties-tracker",
       icon: Timer02Icon
     }
   ])
@@ -192,9 +191,9 @@
       </Sidebar.Group>
     {/if}
 
-    {#if activeEvent != undefined}
+    {#if globals.activeEvent != undefined}
       <Sidebar.Group>
-        <Sidebar.GroupLabel>{activeEvent.name}</Sidebar.GroupLabel>
+        <Sidebar.GroupLabel>{globals.activeEvent.name}</Sidebar.GroupLabel>
         <Sidebar.GroupContent>
           <Sidebar.Menu>
             {#each eventItems as item (item.title)}
