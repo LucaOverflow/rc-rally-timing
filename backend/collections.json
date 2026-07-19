@@ -1330,11 +1330,11 @@
   },
   {
     "id": "pbc_414258986",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "event.organizer ~ @request.auth.id",
+    "updateRule": "event.organizer ~ @request.auth.id",
+    "deleteRule": "event.organizer ~ @request.auth.id",
     "name": "stages",
     "type": "base",
     "fields": [

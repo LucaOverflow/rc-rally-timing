@@ -34,7 +34,7 @@
       .then((decoderResult) => {
         for (const thisDecoder of decoderResult) {
           pb.collection('stages').getFirstListItem(
-            pb.filter('active = true && (start_decoder = {:decoder} || stop_decoder = {:decoder})', {decoder: thisDecoder.id}),
+            pb.filter('start_decoder = {:decoder} || stop_decoder = {:decoder}', {decoder: thisDecoder.id}),
             {
               requestKey: null
             }
