@@ -272,7 +272,7 @@
 </Dialog.Content>
 </Dialog.Root>
 
-<!-- Add Logs Popup -->
+<!-- Logs Popup -->
 <Dialog.Root bind:open={openDecoderLogsPopup}>
 <Dialog.Content class="flex !max-w-fit max-h-[90%] flex-col gap-0">
   <Dialog.Header class="overflow-y-auto">
