@@ -15,6 +15,7 @@ func main() {
 	app := pocketbase.New()
 
 	autoAddTransponderOnPassing(app)
+	addOrUpdateStageTimeAfterPassing(app)
 
 	requireDecoderOnStageActivation(app)
 	validateDifferentDecoderOnStageActivation(app)
@@ -53,6 +54,47 @@ func autoAddTransponderOnPassing(app *pocketbase.PocketBase) {
 			}
 		}
 
+		return e.Next()
+	})
+}
+
+func addOrUpdateStageTimeAfterPassing(app *pocketbase.PocketBase) {
+	app.OnRecordAfterCreateSuccess("passings").BindFunc(func(e *core.RecordEvent) error {
+		stage, err := app.FindFirstRecordByFilter("stages",
+			"start_decoder = {:decoder} || stop_decoder = {:decoder}",
+			dbx.Params{"decoder": e.Record.GetString("decoder")})
+
+		if err != nil {
+			return e.Next()
+		}
+
+		stageTime, err := app.FindRecordsByFilter("stage_times",
+			"stage = {:stage} && start.transponder = {:transponder} && stop = ''",
+			"-start.timecode_ms",
+			1,
+			0,
+			dbx.Params{"stage": stage.Id, "transponder": e.Record.GetString("transponder")})
+
+		stageTimesCollection, err := app.FindCollectionByNameOrId("stage_times")
+		if err != nil {
+			return e.Next()
+		}
+
+		if stage.GetString("start_decoder") == e.Record.GetString("decoder") {
+			if len(stageTime) == 0 {
+				stageTime = append(stageTime, core.NewRecord(stageTimesCollection))
+				stageTime[0].Set("stage", stage.Id)
+			}
+			stageTime[0].Set("start", e.Record.Id)
+		} else {
+			if len(stageTime) > 0 {
+				stageTime[0].Set("stop", e.Record.Id)
+			}
+		}
+
+		if len(stageTime) > 0 {
+			app.Save(stageTime[0])
+		}
 		return e.Next()
 	})
 }
