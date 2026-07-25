@@ -68,7 +68,7 @@
 
     pb.collection("stage_times").getFullList({
       filter: filter,
-      expand: "start, stop, penalties"
+      expand: "start, stop, penalties, start.transponder.owner"
     })
       .then((result) => {
         parseStageTimes(result, "initialLoad")
@@ -81,7 +81,7 @@
       parseStageTimes([newRecord.record], newRecord.action)
     }, {
       filter: filter,
-      expand: "start, stop, penalties"
+      expand: "start, stop, penalties, start.transponder.owner"
     })
       .catch(() => {
         toast.error("Couldn't subscribe to Stage Times")
