@@ -870,7 +870,7 @@
   {
     "id": "pbc_1894659972",
     "listRule": "transponder.owner = @request.auth.id || decoder.owner ~ @request.auth.id",
-    "viewRule": null,
+    "viewRule": "",
     "createRule": "",
     "updateRule": null,
     "deleteRule": null,
@@ -1001,7 +1001,7 @@
   {
     "id": "pbc_3702822455",
     "listRule": null,
-    "viewRule": null,
+    "viewRule": "",
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,
