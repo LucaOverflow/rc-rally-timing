@@ -1,20 +1,18 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import type { stageTime } from '$lib/components/stage-time.svelte';
+  import StageTime from '$lib/components/stage-time.svelte';
   import * as Tabs from "$lib/components/ui/tabs"
   import { pb } from '$lib/pb'
   import type { RecordModel } from 'pocketbase'
   import { onMount } from 'svelte'
   import { toast } from 'svelte-sonner'
+  import { SvelteMap } from 'svelte/reactivity';
 
   let stages: RecordModel[] = $state([])
   let currentStageTab = $state('')
 
-  interface stageTime {
-    best: RecordModel | undefined,
-    last: RecordModel | undefined,
-    running: RecordModel | undefined
-  }
-  let stageTimes = $state(new Map<string /* Transponder */, stageTime>)
+  let stageTimes = $state(new SvelteMap<string /* Transponder */, stageTime>)
   let currentStageTimesStage = ''
 
   onMount(() => {
@@ -54,6 +52,7 @@
   $effect(() => {
     if (currentStageTab != '') {
       if (currentStageTab != currentStageTimesStage) {
+        currentStageTimesStage = currentStageTab
         requestStageTimes()
       }
     }
@@ -130,6 +129,22 @@
         }
       }
     }
+
+    sortStageTimesByBest()
+  }
+
+  function sortStageTimesByBest () {
+    stageTimes = new SvelteMap(Array.from(stageTimes).sort((a, b) => {
+      if (a[1].best != undefined && b[1].best != undefined) {
+        return getDurationFromStageTime(a[1].best).valueOf() - getDurationFromStageTime(b[1].best).valueOf()
+      } else if (a[1].best == undefined && b[1].best == undefined) {
+        return 0
+      } else if (a[1].best != undefined) {
+        return -1
+      } else {
+        return 1
+      }
+    }))
   }
 
   function deleteRecordFromStageTime (transponder: string, recordToDelete: RecordModel) {
@@ -200,17 +215,10 @@
         <Tabs.Trigger value="all">All</Tabs.Trigger>
       </Tabs.List>
     {/if}
-    {#each stages as stage}
-      <Tabs.Content value={stage.id}>
-
-        {stage.name}
-
-      </Tabs.Content>
-    {/each}
-    <Tabs.Content value="all">
-
-      All
-
-    </Tabs.Content>
   </Tabs.Root>
+  
+  {#each stageTimes as stageTime}
+    <StageTime stageTime={stageTime} />
+  {/each}
+
 </div>
