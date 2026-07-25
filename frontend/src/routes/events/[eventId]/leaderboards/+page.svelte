@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import type { stageTime } from '$lib/components/stage-time.svelte';
-  import StageTime from '$lib/components/stage-time.svelte';
+  import type { stageTime } from '$lib/components/stage-time/stage-time-row.svelte';
+  import { getDurationMsFromStageTime, isStageTimeRunning } from '$lib/components/stage-time/stage-time-row.svelte';
+  import * as StageTime from "$lib/components/stage-time"
   import * as Tabs from "$lib/components/ui/tabs"
   import { pb } from '$lib/pb'
   import type { RecordModel } from 'pocketbase'
@@ -123,7 +124,7 @@
         if (existingStageTimes.best == undefined) {
           existingStageTimes.best = newStageTime
         } else {
-          if (getDurationFromStageTime(newStageTime) < getDurationFromStageTime(existingStageTimes.best as RecordModel)) {
+          if (getDurationMsFromStageTime(newStageTime) < getDurationMsFromStageTime(existingStageTimes.best as RecordModel)) {
             existingStageTimes.best = newStageTime
           }
         }
@@ -136,7 +137,7 @@
   function sortStageTimesByBest () {
     stageTimes = new SvelteMap(Array.from(stageTimes).sort((a, b) => {
       if (a[1].best != undefined && b[1].best != undefined) {
-        return getDurationFromStageTime(a[1].best).valueOf() - getDurationFromStageTime(b[1].best).valueOf()
+        return getDurationMsFromStageTime(a[1].best).valueOf() - getDurationMsFromStageTime(b[1].best).valueOf()
       } else if (a[1].best == undefined && b[1].best == undefined) {
         return 0
       } else if (a[1].best != undefined) {
@@ -176,28 +177,6 @@
       stageTimes.delete(transponder)  
     }
   }
-
-  function getDurationFromStageTime (stageTime: RecordModel): Date {
-    let stopTime_ms: number
-    if (stageTime.stop == "") {
-      stopTime_ms = Date.now()
-    } else {
-      stopTime_ms = stageTime.expand?.stop.timecode_ms
-    }
-    
-    let penalty_ms = 0
-    if (stageTime.penalties.length > 0) {
-      for (const penalty of stageTime.expand?.penalties) {
-        penalty_ms += penalty.duration_ms
-      }
-    }
-
-    return new Date((stopTime_ms - stageTime.expand?.start.timecode_ms) + penalty_ms)
-  }
-
-  function isStageTimeRunning (stageTime: RecordModel): boolean {
-    return stageTime.stop == ""
-  }
 </script>
 
 <div class="ml-6 mr-6">
@@ -212,13 +191,15 @@
             {stage.name}
           </Tabs.Trigger>
         {/each}
-        <Tabs.Trigger value="all">All</Tabs.Trigger>
+        <!-- <Tabs.Trigger value="all">All</Tabs.Trigger> --> <!-- TODO Needs different Stage Time Table variant -->
       </Tabs.List>
     {/if}
   </Tabs.Root>
   
-  {#each stageTimes as stageTime}
-    <StageTime stageTime={stageTime} />
-  {/each}
+  <StageTime.Root>
+    {#each stageTimes as stageTime, index}
+      <StageTime.Row position={index + 1} stageTime={stageTime[1]} />
+    {/each}
+  </StageTime.Root>
 
 </div>
