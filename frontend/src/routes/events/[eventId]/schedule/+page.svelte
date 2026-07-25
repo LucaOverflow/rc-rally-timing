@@ -1,4 +1,5 @@
 <script lang="ts">
+  // TODO Move this current schedule page to a dedicated event admin page
   import { page } from '$app/state';
   import { Button } from "$lib/components/ui/button"
   import * as Tabs from "$lib/components/ui/tabs"
@@ -37,10 +38,28 @@
     })
       .then((result: RecordModel[]) => {
         stages = result
+        defaultSelectStage()
       })
       .catch(() => {
         toast.error("Couldn't load stages")
       })
+  }
+
+  function defaultSelectStage () {
+    if (currentStageTab != '') {
+      return
+    }
+
+    // 1. Select first active
+    for (const stage of stages) {
+      if (stage.active) {
+        currentStageTab = stage.id
+        return
+      }
+    }
+
+    // 2. Select last
+    currentStageTab = stages[stages.length - 1].id
   }
 
   function addStage (e: Event) {
