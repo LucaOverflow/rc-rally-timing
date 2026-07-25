@@ -27,12 +27,12 @@
     const duration = getDurationMsFromStageTime(stageTime)
 
     let remainderMinutes = duration % 60000
-    const minutes = (duration - remainderMinutes) / 60000
+    const minutes = ((duration - remainderMinutes) / 60000).toString().padStart(2, "0")
     
     let remainderSeconds = remainderMinutes % 1000
-    const seconds = (remainderMinutes - remainderSeconds) / 1000
+    const seconds = ((remainderMinutes - remainderSeconds) / 1000).toString().padStart(2, "0")
 
-    const milliseconds = remainderSeconds
+    const milliseconds = remainderSeconds.toPrecision(3).toString().padEnd(3, "0")
 
     return minutes + ":" + seconds + ":" + milliseconds
   }
