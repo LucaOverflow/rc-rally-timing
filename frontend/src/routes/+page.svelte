@@ -27,7 +27,10 @@
     {:else}
       <Empty.Title>Welcome</Empty.Title>
       <Empty.Description>
-        With this tool you can manage and run RC Rally Events. Login or Register to get started.
+        <p>With this tool you can manage and run RC Rally Events. Login or Register to get started.</p><br>
+
+        <p>Please note that this site is in a early state of development and many features are not implemented yet.
+        Down the line I'll provide manuals on how to use it. You can follow the development on <a href="https://github.com/LucaOverflow/rc-rally-timing" target="_blank" style="color: var(--foreground)" class="hover:underline">Github</a>.</p>
       </Empty.Description>
     {/if}
   </Empty.Header>
