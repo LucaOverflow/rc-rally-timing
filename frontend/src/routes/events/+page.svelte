@@ -37,6 +37,37 @@
   })
   let addEventErrorMessage = $state("")
 
+  interface option {
+    name: string,
+    value: string
+  }
+  
+  const start_order_options: option[] = [
+    {
+      name: "Reactive",
+      value: "reactive"
+    },
+    {
+      name: "Ordered",
+      value: "ordered"
+    }
+  ]
+
+  const start_mode_options: option[] = [
+    {
+      name: "Passing",
+      value: "passing"
+    },
+    {
+      name: "Countdown",
+      value: "countdown"
+    },
+    {
+      name: "Fixed Time",
+      value: "fixed_time"
+    }
+  ]
+
   onMount(() => {
     requestEvents()
   })
@@ -86,6 +117,18 @@
       .catch(() => {
         toast.error("Couldn't remove event")
       })
+  }
+
+  function getOptionName (options: option[], value: String) {
+    const optionIndex = options.findIndex((option) => {
+      return option.value == value
+    })
+
+    if (optionIndex == -1) {
+      return ""
+    }
+
+    return options[optionIndex].name
   }
 </script>
 
@@ -191,10 +234,11 @@
           <Field.Field>
             <Field.Label for="start_order">Start Order</Field.Label>
             <Select.Root type="single" bind:value={addEventFormData.start_order}>
-              <Select.Trigger id="start_order">{addEventFormData.start_order || "Select a start order"}</Select.Trigger>
+              <Select.Trigger id="start_order">{getOptionName(start_order_options, addEventFormData.start_order) || "Select a start order"}</Select.Trigger>
               <Select.Content>
-                <Select.Item value="reactive">Reactive</Select.Item>
-                <Select.Item value="ordered">Ordered</Select.Item>
+                {#each start_order_options as option}
+                  <Select.Item value={option.value}>{option.name}</Select.Item>
+                {/each}
               </Select.Content>
             </Select.Root>
           </Field.Field>
@@ -202,11 +246,11 @@
           <Field.Field>
             <Field.Label for="start_mode">Start Mode</Field.Label>
             <Select.Root type="single" bind:value={addEventFormData.start_mode}>
-              <Select.Trigger id="start_mode">{addEventFormData.start_mode || "Select a start mode"}</Select.Trigger>
+              <Select.Trigger id="start_mode">{getOptionName(start_mode_options, addEventFormData.start_mode) || "Select a start mode"}</Select.Trigger>
               <Select.Content>
-                <Select.Item value="passing">Passing</Select.Item>
-                <Select.Item value="countdown">Countdown</Select.Item>
-                <Select.Item value="fixed_time">Fixed Time</Select.Item>
+                {#each start_mode_options as option}
+                  <Select.Item value={option.value}>{option.name}</Select.Item>
+                {/each}
               </Select.Content>
             </Select.Root>
           </Field.Field>
