@@ -15,15 +15,14 @@
   import { pb } from '$lib/pb'
   import { Alert01Icon, PlusSignIcon, StopWatchIcon } from '@hugeicons/core-free-icons'
   import { HugeiconsIcon } from '@hugeicons/svelte'
-  import type { ListResult, RecordModel } from 'pocketbase'
+  import type { ClientResponseError, ListResult, RecordModel } from 'pocketbase'
   import { onMount } from 'svelte'
   import { toast } from 'svelte-sonner'
   import DateTimePicker from '$lib/components/date-time-picker.svelte';
 
   let events: RecordModel[] = $state([])
 
-  let openAddEventPopup = $state(false)
-  let addEventFormData = $state({
+  const emptyAddEventFormData = {
     name: "",
     description: "",
     start: "",
@@ -34,7 +33,10 @@
     signup_until: "",
     max_drivers: 50,
     allow_transponder_signup: true
-  })
+  }
+
+  let openAddEventPopup = $state(false)
+  let addEventFormData = $state(emptyAddEventFormData)
   let addEventErrorMessage = $state("")
 
   interface option {
@@ -92,6 +94,20 @@
   }
 
   function addEvent () {
+    addEventErrorMessage = ""
+
+    pb.collection("events").create({
+      organizer: [pb.authStore.record?.id],
+      ...addEventFormData
+    })
+      .then(() => {
+        openAddEventPopup = false
+        addEventFormData = emptyAddEventFormData
+        requestEvents()
+      })
+      .catch((error: ClientResponseError) => {
+        addEventErrorMessage = error.message
+      })
   }
 
   function quickAddPractice () {
