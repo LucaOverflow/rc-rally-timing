@@ -39,13 +39,17 @@
 
   interface option {
     name: string,
-    value: string
+    value: string,
+    exclude?: string[]
   }
   
   const start_order_options: option[] = [
     {
       name: "Reactive",
-      value: "reactive"
+      value: "reactive",
+      exclude: [
+        "fixed_time"
+      ]
     },
     {
       name: "Ordered",
@@ -67,6 +71,8 @@
       value: "fixed_time"
     }
   ]
+
+  let startModeSelectionDisabled = $derived(addEventFormData.start_order == "")
 
   onMount(() => {
     requestEvents()
@@ -119,7 +125,7 @@
       })
   }
 
-  function getOptionName (options: option[], value: String) {
+  function getOptionName (options: option[], value: string): string {
     const optionIndex = options.findIndex((option) => {
       return option.value == value
     })
@@ -130,6 +136,24 @@
 
     return options[optionIndex].name
   }
+
+  function isOptionExcluded (optionsSource: option[], optionExcludeSource: string, optionExcludeTarget: string): boolean {
+    const optionIndex = optionsSource.findIndex((option) => {
+      return option.value == optionExcludeSource
+    })
+
+    if (optionIndex == -1) {
+      return false
+    }
+
+    return optionsSource[optionIndex].exclude?.includes(optionExcludeTarget) || false
+  }
+
+  $effect(() => {
+    if (isOptionExcluded(start_order_options, addEventFormData.start_order, addEventFormData.start_mode)) {
+      addEventFormData.start_mode = ""
+    }
+  })
 </script>
 
 <Button onclick={() => {openAddEventPopup = true}} class="mt-2">
@@ -245,11 +269,11 @@
 
           <Field.Field>
             <Field.Label for="start_mode">Start Mode</Field.Label>
-            <Select.Root type="single" bind:value={addEventFormData.start_mode}>
+            <Select.Root type="single" bind:value={addEventFormData.start_mode} disabled={startModeSelectionDisabled}>
               <Select.Trigger id="start_mode">{getOptionName(start_mode_options, addEventFormData.start_mode) || "Select a start mode"}</Select.Trigger>
               <Select.Content>
                 {#each start_mode_options as option}
-                  <Select.Item value={option.value}>{option.name}</Select.Item>
+                  <Select.Item value={option.value} disabled={isOptionExcluded(start_order_options, addEventFormData.start_order, option.value)}>{option.name}</Select.Item>
                 {/each}
               </Select.Content>
             </Select.Root>
