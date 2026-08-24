@@ -274,7 +274,7 @@
 
 <!-- Logs Popup -->
 <Dialog.Root bind:open={openDecoderLogsPopup}>
-<Dialog.Content class="flex !max-w-fit max-h-[90%] flex-col gap-0">
+<Dialog.Content class="flex max-w-fit! max-h-[90%] flex-col gap-0">
   <Dialog.Header class="overflow-y-auto">
     <Dialog.Title>Logs for {decoder[decoderLogsPopupIndex].name}</Dialog.Title>
     <Table.Root>
