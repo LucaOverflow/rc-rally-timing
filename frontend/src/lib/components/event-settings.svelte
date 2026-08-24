@@ -8,6 +8,8 @@
   import * as Select from "$lib/components/ui/select"
 
   let {
+    title = "",
+    description = "",
     formData = $bindable({
     name: "",
     description: "",
@@ -92,14 +94,21 @@
 
 <Field.Set>
 
-  <Field.Legend>
-    Add a new Event
-  </Field.Legend>
-  <Field.Description>
-    You can still edit all these settings after creation.
-  </Field.Description>
+  {#if title != ""}
+    <Field.Legend>
+      {title}
+    </Field.Legend>
+  {/if}
 
-  <Separator />
+  {#if description != ""}
+    <Field.Description>
+      {description}
+    </Field.Description>
+  {/if}
+  
+  {#if title != "" || description != ""}
+    <Separator />
+  {/if}
 
   <Field.Group>
 

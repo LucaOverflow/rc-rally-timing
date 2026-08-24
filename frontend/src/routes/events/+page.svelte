@@ -130,7 +130,7 @@
   <Dialog.Content class="flex max-h-[90%] flex-col gap-0">
     <Dialog.Header class="overflow-y-auto">
       
-      <EventSettings bind:formData={addEventFormData} />
+      <EventSettings title="Add a new Event" description="You can still edit all these settings after creation." bind:formData={addEventFormData} />
 
       {#if addEventErrorMessage != ''}
         <Alert.Root variant="destructive">
