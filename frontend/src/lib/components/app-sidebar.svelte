@@ -14,6 +14,7 @@
     InformationCircleIcon,
     InternetAntenna02Icon,
     RankingIcon,
+    Settings01Icon,
     StopWatchIcon,
     Timer02Icon } from '@hugeicons/core-free-icons';
   import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/svelte';
@@ -27,7 +28,8 @@
   interface MenuItem {
     title: string,
     url: string,
-    icon: IconSvgElement
+    icon: IconSvgElement,
+    requirements?: string[]
   }
 
   $effect(() => {
@@ -62,6 +64,14 @@
   ]
 
   const eventItems: MenuItem[] = $derived([
+    {
+      title: "Settings",
+      url: "/events/" + globals.activeEvent?.id + "/settings",
+      icon: Settings01Icon,
+      requirements: [
+        "organizer"
+      ]
+    },
     {
       title: "Schedule",
       url: "/events/" + globals.activeEvent?.id + "/schedule",
@@ -197,16 +207,28 @@
         <Sidebar.GroupContent>
           <Sidebar.Menu>
             {#each eventItems as item (item.title)}
-              <Sidebar.MenuItem>
-                <Sidebar.MenuButton isActive={page.url.pathname.endsWith(item.url)}>
-                  {#snippet child({ props })}
-                    <a href={item.url} {...props}>
-                        <HugeiconsIcon icon={item.icon} />
-                        <span>{item.title}</span>
-                      </a>
-                  {/snippet}
-                </Sidebar.MenuButton>
-              </Sidebar.MenuItem>
+
+              {#snippet eventMenuItem(item: MenuItem)}
+                <Sidebar.MenuItem>
+                  <Sidebar.MenuButton isActive={page.url.pathname.endsWith(item.url)}>
+                    {#snippet child({ props })}
+                      <a href={item.url} {...props}>
+                          <HugeiconsIcon icon={item.icon} />
+                          <span>{item.title}</span>
+                        </a>
+                    {/snippet}
+                  </Sidebar.MenuButton>
+                </Sidebar.MenuItem>
+              {/snippet}
+
+              {#if item.requirements?.includes("organizer") || false}
+                {#if globals.activeEvent.organizer.includes(pb.authStore.record?.id)}
+                  {@render eventMenuItem(item)}
+                {/if}
+              {:else}
+                {@render eventMenuItem(item)}
+              {/if}
+              
             {/each}
           </Sidebar.Menu>
         </Sidebar.GroupContent>
