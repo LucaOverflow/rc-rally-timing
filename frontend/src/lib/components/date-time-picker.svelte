@@ -11,7 +11,7 @@
   
   let open = $state(false);
   let date = $state<CalendarDate | undefined>();
-  let time = $state("10:00")
+  let time = $state("00:00")
 
   let { 
     id: id = "",
