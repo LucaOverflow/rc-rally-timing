@@ -28,7 +28,7 @@
 
     const dateTimeString = value.split(" ")
     const dateString = dateTimeString[0].split("-")
-    const timeString = dateTimeString[1].slice(0, 5)
+    const timeString = dateTimeString[1].slice(0, 5).split(":")
     
     if (dateString.length == 3) {
       let parsedDate = new CalendarDate(Number(dateString[0]), Number(dateString[1]), Number(dateString[2]))
@@ -37,8 +37,10 @@
       }
     }
 
-    if (timeString != undefined) {
-      time = timeString
+    if (timeString.length == 2) {
+      let localizedTime = new Date()
+      localizedTime.setUTCHours(Number(timeString[0]), Number(timeString[1]))
+      time = localizedTime.toTimeString().slice(0, 5)
     }
   })
 
