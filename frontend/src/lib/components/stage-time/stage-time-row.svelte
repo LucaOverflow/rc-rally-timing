@@ -46,8 +46,10 @@
   import type { RecordModel } from 'pocketbase'
   import { Badge } from '$lib/components/ui/badge'
   import * as Table from "$lib/components/ui/table"
+  import type { SvelteMap } from 'svelte/reactivity';
 
-  let { position, stageTime }: {position: number, stageTime: stageTime} = $props()
+  let { position, stageTimes }: {position: number, stageTimes: SvelteMap<string /* Transponder */, stageTime>} = $props()
+  let stageTime = $derived(stageTimes.values().toArray()[position-1])
 
   function getDriverName (): string | undefined {
     if (stageTime.last != undefined) {

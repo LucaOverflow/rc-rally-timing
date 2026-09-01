@@ -197,8 +197,8 @@
   </Tabs.Root>
   
   <StageTime.Root>
-    {#each stageTimes as stageTime, index}
-      <StageTime.Row position={index + 1} stageTime={stageTime[1]} />
+    {#each stageTimes, index}
+      <StageTime.Row position={index + 1} stageTimes={stageTimes} />
     {/each}
   </StageTime.Root>
 
