@@ -44,11 +44,12 @@
 
 <script lang="ts">
   import type { RecordModel } from 'pocketbase'
+  import { Badge } from '$lib/components/ui/badge'
   import * as Table from "$lib/components/ui/table"
 
   let { position, stageTime }: {position: number, stageTime: stageTime} = $props()
 
-  function getDriverName (): string {
+  function getDriverName (): string | undefined {
     if (stageTime.last != undefined) {
       if (stageTime.last.expand?.start?.expand?.transponder?.id) {
         if (stageTime.last.expand?.start?.expand?.transponder?.expand?.owner?.name) {
@@ -66,15 +67,30 @@
         }
       }
     }
+  }
 
-    return ""
+  function getDifferentiator (): string | undefined {
+    if (stageTime.last != undefined) {
+      if (stageTime.last.expand?.start?.expand?.transponder?.id) {
+        return stageTime.last.expand.start.expand.transponder.differentiator
+      }
+    } else if (stageTime.running != undefined) {
+      if (stageTime.running.expand?.start?.expand?.transponder?.id) {
+        return stageTime.running.expand.start.expand.transponder.differentiator
+      }
+    }
   }
 </script>
 
 
 <Table.Row>
   <Table.Cell>{position}</Table.Cell>
-  <Table.Cell>{getDriverName()}</Table.Cell>
+  <Table.Cell>
+    {getDriverName()}
+    {#if getDifferentiator()}
+      <Badge variant="secondary">{getDifferentiator()}</Badge>
+    {/if}
+  </Table.Cell>
   {#if stageTime.best}
     <Table.Cell>{getDurationStringFromStageTime(stageTime.best)}</Table.Cell>
   {/if}
