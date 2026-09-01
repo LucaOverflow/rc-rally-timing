@@ -23,7 +23,8 @@
   let openAddTransponderPopup = $state(false)
   let addTransponderFormData = $state({
     id: '',
-    personal_notes: ''
+    personal_notes: '',
+    differentiator: ''
   })
   let addTransponderErrorMessage = $state('')
 
@@ -66,7 +67,8 @@
         try {
           await pb.collection('transponder').update(addTransponderFormData.id, {
             owner: pb.authStore.record?.id,
-            personal_notes: addTransponderFormData.personal_notes
+            personal_notes: addTransponderFormData.personal_notes,
+            differentiator: addTransponderFormData.differentiator
           })
         } catch {
           addTransponderErrorMessage = "Couldn't add user to Transponder"
@@ -90,19 +92,22 @@
       requestTransponder()
       addTransponderFormData.id = ''
       addTransponderFormData.personal_notes = ''
+      addTransponderFormData.differentiator = ''
     }
   }
 
-  function queueNoteSave () {
+  function queueTransponderSave () {
     clearTimeout(saveTimeout)
-    saveTimeout = setTimeout(saveNotes, 1000)
+    saveTimeout = setTimeout(saveTransponders, 1000)
   }
 
-  function saveNotes () {
+  function saveTransponders () {
     let wereAllNotesSaved = true
 
     for (let i = 0; i < transponder.length; ++i) {
-      if (transponder[i].personal_notes != initialTransponderState[i].personal_notes) {
+      if (transponder[i].personal_notes != initialTransponderState[i].personal_notes ||
+          transponder[i].differentiator != initialTransponderState[i].differentiator
+      ) {
         pb.collection('transponder').update(transponder[i].id, transponder[i])
           .then(() => {
             initialTransponderState[i] = {...transponder[i]}
@@ -112,9 +117,9 @@
           })
           .finally(() => {
             if (wereAllNotesSaved) {
-              toast.success("Notes saved")
+              toast.success("Changes saved")
             } else {
-              toast.error("Notes couldn't all be saved")
+              toast.error("Changes couldn't all be saved")
             }
           })
       }
@@ -153,7 +158,8 @@
         {#if thisTransponder.type != ''}
           <Badge variant="secondary">{thisTransponder.type}</Badge>
         {/if}
-        <Input type="text" placeholder="Personal Note" bind:value={thisTransponder.personal_notes} oninput={queueNoteSave} class="ml-auto w-1/2" />
+        <Input type="text" placeholder="Differentiator" bind:value={thisTransponder.differentiator} oninput={queueTransponderSave} class="ml-auto w-1/3" /> <!-- TODO Add explainer -->
+        <Input type="text" placeholder="Personal Note" bind:value={thisTransponder.personal_notes} oninput={queueTransponderSave} class="ml-auto w-1/3" />
         <Button variant="destructive" class="ml-auto" onclick={() => {deleteTransponder(thisTransponder.id)}}>Remove</Button>
       </Item.Content>
     </Item.Root>
@@ -168,6 +174,9 @@
 
       <Label for="id">Transponder ID</Label>
       <Input id="id" name="id" type="number" bind:value={addTransponderFormData.id} />
+
+      <Label for="differentiator">Differentiator</Label> <!-- TODO Add explainer -->
+      <Input id="differentiator" name="differentiator" type="text" bind:value={addTransponderFormData.differentiator} />
 
       <Label for="personal_notes">Personal Notes</Label>
       <Input id="personal_notes" name="personal_notes" type="text" bind:value={addTransponderFormData.personal_notes} />
