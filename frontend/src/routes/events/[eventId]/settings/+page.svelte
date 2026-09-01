@@ -2,8 +2,6 @@
   import EventSettings from '$lib/components/event-settings.svelte';
   import { globals } from '$lib/globals.svelte';
 
-  // TODO Fix date parsing
-
   let eventFormData = $state({
     name: globals.activeEvent?.name,
     description: globals.activeEvent?.description,

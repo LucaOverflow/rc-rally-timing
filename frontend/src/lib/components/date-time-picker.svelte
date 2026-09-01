@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { getLocalTimeZone, Time, toCalendarDateTime } from "@internationalized/date";
+  import { getLocalTimeZone } from "@internationalized/date";
   import * as Popover from "$lib/components/ui/popover/index.js";
   import Calendar from "$lib/components/ui/calendar/calendar.svelte";
   import { Button } from "$lib/components/ui/button/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
-  import type { CalendarDate, CalendarDateTime } from "@internationalized/date";
+  import { CalendarDate } from "@internationalized/date";
   import { HugeiconsIcon } from '@hugeicons/svelte';
   import { ChevronDown } from '@hugeicons/core-free-icons';
+  import { onMount } from 'svelte';
   
   let open = $state(false);
   let date = $state<CalendarDate | undefined>();
@@ -14,8 +15,32 @@
 
   let { 
     id: id = "",
-    value: value = $bindable('')
+    value: value = $bindable()
+   }: {
+    id: string,
+    value: string
    } = $props()
+
+  onMount(() => {
+    if (value == undefined) {
+      return
+    }
+
+    const dateTimeString = value.split(" ")
+    const dateString = dateTimeString[0].split("-")
+    const timeString = dateTimeString[1].slice(0, 5)
+    
+    if (dateString.length == 3) {
+      let parsedDate = new CalendarDate(Number(dateString[0]), Number(dateString[1]), Number(dateString[2]))
+      if (parsedDate != undefined) {
+        date = parsedDate
+      }
+    }
+
+    if (timeString != undefined) {
+      time = timeString
+    }
+  })
 
   $effect(() => {
     if (date == undefined) {
