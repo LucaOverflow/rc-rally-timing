@@ -19,7 +19,7 @@
     start_order: "",
     start_mode: "",
     signup_until: "",
-    max_drivers: 50,
+    max_drivers: 0,
     allow_transponder_signup: true
     })
   } = $props()
@@ -162,6 +162,7 @@
       <Field.Label for="max_drivers">Max. Drivers</Field.Label>
       <Field.Description>
         This is the overall event size limit. Additionally you'll be able to limit the class sizes induvitually after event creation.
+        0 will disable the limit.
       </Field.Description>
       <Input id="max_drivers" type="number" bind:value={formData.max_drivers} />
     </Field.Field>
