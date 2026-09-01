@@ -25,7 +25,7 @@
     start_order: "",
     start_mode: "",
     signup_until: "",
-    max_drivers: 50,
+    max_drivers: 0,
     allow_transponder_signup: true
   }
 
