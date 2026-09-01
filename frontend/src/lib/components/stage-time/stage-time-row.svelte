@@ -23,20 +23,6 @@
     return (stopTime_ms - stageTime.expand?.start.timecode_ms) + penalty_ms
   }
 
-  export function getDurationStringFromStageTime (stageTime: RecordModel): string {
-    const duration = getDurationMsFromStageTime(stageTime)
-
-    let remainderMinutes = duration % 60000
-    const minutes = ((duration - remainderMinutes) / 60000).toString().padStart(2, "0")
-    
-    let remainderSeconds = remainderMinutes % 1000
-    const seconds = ((remainderMinutes - remainderSeconds) / 1000).toString().padStart(2, "0")
-
-    const milliseconds = remainderSeconds.toPrecision(3).toString().padEnd(3, "0")
-
-    return minutes + ":" + seconds + ":" + milliseconds
-  }
-
   export function isStageTimeRunning (stageTime: RecordModel): boolean {
     return stageTime.stop == ""
   }
@@ -82,6 +68,44 @@
       }
     }
   }
+
+  function formatMsToString (durationMs: number): string {
+    let remainderMinutes = durationMs % 60000
+    const minutes = ((durationMs - remainderMinutes) / 60000).toString().padStart(2, "0")
+    
+    let remainderSeconds = remainderMinutes % 1000
+    const seconds = ((remainderMinutes - remainderSeconds) / 1000).toString().padStart(2, "0")
+
+    const milliseconds = remainderSeconds.toPrecision(3).toString().padEnd(3, "0")
+
+    return minutes + ":" + seconds + ":" + milliseconds
+  }
+
+  function getDurationStringFromStageTime (stageTime: RecordModel): string {
+    const duration = getDurationMsFromStageTime(stageTime)
+    return formatMsToString(duration)
+  }
+
+  function getDiffToNextString (): string | undefined {
+    if (position == 1) {
+      return "-"
+    }
+
+    if (stageTime.best == undefined) {
+      return
+    }
+
+    const nextBestStageTime = stageTimes.values().toArray()[position-2].best
+
+    if (nextBestStageTime == undefined) {
+      return
+    }
+
+    const thisTime = getDurationMsFromStageTime(stageTime.best)
+    const nextTime = getDurationMsFromStageTime(nextBestStageTime)
+
+    return formatMsToString(thisTime - nextTime)
+  }
 </script>
 
 
@@ -99,6 +123,6 @@
   {#if stageTime.last}
     <Table.Cell>{getDurationStringFromStageTime(stageTime.last)}</Table.Cell>
   {/if}
-  <Table.Cell>-<!-- TODO --></Table.Cell>
+  <Table.Cell>{getDiffToNextString()}</Table.Cell>
   <Table.Cell>-<!-- TODO --></Table.Cell>
 </Table.Row>
