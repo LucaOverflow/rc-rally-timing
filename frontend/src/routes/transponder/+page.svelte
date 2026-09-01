@@ -158,8 +158,8 @@
         {#if thisTransponder.type != ''}
           <Badge variant="secondary">{thisTransponder.type}</Badge>
         {/if}
-        <Input type="text" placeholder="Differentiator" bind:value={thisTransponder.differentiator} oninput={queueTransponderSave} class="ml-auto w-1/3" /> <!-- TODO Add explainer -->
-        <Input type="text" placeholder="Personal Note" bind:value={thisTransponder.personal_notes} oninput={queueTransponderSave} class="ml-auto w-1/3" />
+        <Input type="text" placeholder="Differentiator" bind:value={thisTransponder.differentiator} oninput={queueTransponderSave} class="ml-auto w-1/8" /> <!-- TODO Add explainer -->
+        <Input type="text" placeholder="Personal Note" bind:value={thisTransponder.personal_notes} oninput={queueTransponderSave} class="ml-auto w-1/2" />
         <Button variant="destructive" class="ml-auto" onclick={() => {deleteTransponder(thisTransponder.id)}}>Remove</Button>
       </Item.Content>
     </Item.Root>
