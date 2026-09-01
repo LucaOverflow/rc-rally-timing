@@ -104,7 +104,28 @@
     const thisTime = getDurationMsFromStageTime(stageTime.best)
     const nextTime = getDurationMsFromStageTime(nextBestStageTime)
 
-    return formatMsToString(thisTime - nextTime)
+    return "+" + formatMsToString(thisTime - nextTime)
+  }
+
+  function getDiffToFirstString (): string | undefined {
+    if (position == 1) {
+      return "-"
+    }
+
+    if (stageTime.best == undefined) {
+      return
+    }
+    
+    const FirstBestStageTime = stageTimes.values().toArray()[0].best
+
+    if (FirstBestStageTime == undefined) {
+      return
+    }
+
+    const thisTime = getDurationMsFromStageTime(stageTime.best)
+    const firstTime = getDurationMsFromStageTime(FirstBestStageTime)
+
+    return "+" + formatMsToString(thisTime - firstTime)
   }
 </script>
 
@@ -124,5 +145,5 @@
     <Table.Cell>{getDurationStringFromStageTime(stageTime.last)}</Table.Cell>
   {/if}
   <Table.Cell>{getDiffToNextString()}</Table.Cell>
-  <Table.Cell>-<!-- TODO --></Table.Cell>
+  <Table.Cell>{getDiffToFirstString()}</Table.Cell>
 </Table.Row>
