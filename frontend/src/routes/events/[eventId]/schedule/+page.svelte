@@ -50,6 +50,10 @@
       return
     }
 
+    if (stages.length == 0) {
+      return
+    }
+
     // 1. Select first active
     for (const stage of stages) {
       if (stage.active) {
