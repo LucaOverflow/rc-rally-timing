@@ -22,7 +22,7 @@
    } = $props()
 
   onMount(() => {
-    if (value == undefined) {
+    if (value == undefined || value == "") {
       return
     }
 
